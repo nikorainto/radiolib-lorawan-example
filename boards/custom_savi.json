@@ -1,0 +1,42 @@
+{
+  "build": {
+    "arduino": {
+      "variant_h": "variant_SAVI.h"
+    },
+    "cpu": "cortex-m0plus",
+    "extra_flags": "-DSTM32L072xx -DARDUINO_SAVI",
+    "f_cpu": "32000000L",
+    "framework_extra_flags": {
+      "arduino": ""
+    },
+    "mcu": "stm32l072rb",
+    "product_line": "STM32L072xx",
+    "variant": "SAVI"
+  },
+  "debug": {
+    "jlink_device": "STM32L072RB",
+    "openocd_target": "stm32l0",
+    "svd_path": "STM32L07x.svd"
+  },
+  "frameworks": [
+    "arduino",
+    "cmsis",
+    "stm32cube",
+    "libopencm3"
+  ],
+  "name": "Savi",
+  "upload": {
+    "maximum_ram_size": 20480,
+    "maximum_size": 131072,
+    "protocol": "stlink",
+    "protocols": [
+      "dfu",
+      "serial",
+      "jlink",
+      "stlink",
+      "blackmagic"
+    ]
+  },
+  "url": "https://example.com/",
+  "vendor": "Savi"
+}
