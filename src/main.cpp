@@ -1,50 +1,78 @@
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 #include "config.h"
 
-const uint8_t dataRate = 0; // SF12
+// -- This is not working. Stuck in Reset_Handler: / Infinite_Loop:
+Adafruit_BME280 bme;
+
+float temperature, pressure, altitude, humidity;
 
 void setup()
 {
-  if (radio.begin() != RADIOLIB_ERR_NONE)
-  {
-    while (true)
-      ;
-  }
+  Wire.begin();
+  bme.begin(0x76);
 
+  radio.begin();
   radio.setRfSwitchPins(PA3, PA2);
+
   node.beginOTAA(joinEUI, devEUI, nwkKey, appKey);
-
-  int16_t state = node.activateOTAA(dataRate);
-
-  if (state != RADIOLIB_ERR_NONE)
-  {
-    while (true)
-      ;
-  }
-
-  node.setADR(false);
-  node.setDatarate(dataRate);
+  int16_t state = node.activateOTAA();
 }
 
 void loop()
 {
-  uint8_t battLevel = 146;
+  temperature = bme.readTemperature();
+  pressure = bme.readPressure() / 100.0F;
+  humidity = bme.readHumidity();
 
-  node.setDeviceStatus(battLevel);
-
-  uint8_t value1 = radio.random(100);
-  uint16_t value2 = radio.random(2000);
-
-  uint8_t uplinkPayload[] = {value1, highByte(value2), lowByte(value2)};
-
-  const uint8_t Port = 64;
-
-  int16_t state = node.sendReceive(uplinkPayload, sizeof(uplinkPayload), Port);
-
-  if (state != RADIOLIB_LORAWAN_NO_DOWNLINK && state != RADIOLIB_ERR_NONE)
-  {
-    while (true)
-      ;
-  }
-
-  delay(uplinkIntervalSeconds * 1000UL);
+  delay(2000);
 }
+
+// -- This is able to show values from BME280
+/*
+Adafruit_BME280 bme;
+
+float temperature, pressure, altitude, humidity;
+
+void setup()
+{
+  Wire.begin();
+  bme.begin(0x76);
+
+  radio.begin();
+  radio.setRfSwitchPins(PA3, PA2);
+
+  node.beginOTAA(joinEUI, devEUI, nwkKey, appKey);
+}
+
+void loop()
+{
+  temperature = bme.readTemperature();
+  pressure = bme.readPressure() / 100.0F;
+  humidity = bme.readHumidity();
+
+  delay(2000);
+}
+*/
+
+// -- This is able to connect to LoRaWAN
+/*
+Adafruit_BME280 bme;
+
+float temperature, pressure, altitude, humidity;
+
+void setup()
+{
+  radio.begin();
+  radio.setRfSwitchPins(PA3, PA2);
+
+  node.beginOTAA(joinEUI, devEUI, nwkKey, appKey);
+  int16_t state = node.activateOTAA();
+}
+
+void loop()
+{
+  delay(2000);
+}
+*/
