@@ -1,9 +1,7 @@
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
 #include "config.h"
 
-Adafruit_BME280 bme;
+float temperature, pressure, humidity;
 
 SX1262 *radio = nullptr;
 LoRaWANNode *node = nullptr;
@@ -11,12 +9,6 @@ LoRaWANNode *node = nullptr;
 void setup()
 {
   Wire.begin();
-
-  if (!bme.begin(0x76))
-  {
-    while (1)
-      ;
-  }
 
   radio = new SX1262(new Module(PA4, PA0, PC4, PC5));
 
@@ -31,14 +23,9 @@ void setup()
 
 void loop()
 {
-  float temperature = bme.readTemperature();
-  float pressure = bme.readPressure() / 100.0F;
-  float humidity = bme.readHumidity();
-
-  delay(2000);
+  delay(500);
 }
 
-// Clean up dynamically allocated memory
 void cleanup()
 {
   delete node;
