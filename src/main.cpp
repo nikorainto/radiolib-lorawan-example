@@ -1,33 +1,29 @@
 #include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 #include "config.h"
 
-float temperature, pressure, humidity;
+Adafruit_BME280 bme;
 
-SX1262 *radio = nullptr;
-LoRaWANNode *node = nullptr;
+float temperature, pressure, altitude, humidity;
 
 void setup()
 {
   Wire.begin();
+  bme.begin(0x76);
 
-  radio = new SX1262(new Module(PA4, PA0, PC4, PC5));
+  radio.begin();
+  radio.setRfSwitchPins(PA3, PA2);
 
-  node = new LoRaWANNode(radio, &Region, subBand);
-
-  radio->begin();
-  radio->setRfSwitchPins(PA3, PA2);
-
-  node->beginOTAA(joinEUI, devEUI, nwkKey, appKey);
-  node->activateOTAA();
+  node.beginOTAA(joinEUI, devEUI, nwkKey, appKey);
+  int16_t state = node.activateOTAA();
 }
 
 void loop()
 {
-  delay(500);
-}
+  temperature = bme.readTemperature();
+  pressure = bme.readPressure() / 100.0F;
+  humidity = bme.readHumidity();
 
-void cleanup()
-{
-  delete node;
-  delete radio;
+  delay(2000);
 }
